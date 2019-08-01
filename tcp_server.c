@@ -5,6 +5,7 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
+#define BUF_SIZE 1024
 void error_handling(char *message);
 
 int main(int argc, char *argv[])
@@ -16,8 +17,10 @@ int main(int argc, char *argv[])
 	struct sockaddr_in clnt_addr;
 	socklen_t clnt_addr_size;
 
-	char message[] = "Hello World";
-	
+	char message[BUF_SIZE];
+	int str_len, i;
+	socklen_t clnt_adr_sz;
+
 	if(argc != 2)
 	{
 		printf("Usage: %s <port>\n", argv[0]);	
@@ -40,10 +43,20 @@ int main(int argc, char *argv[])
 		error_handling("listen() error");
 
 	clnt_addr_size = sizeof(clnt_addr);
-	clnt_sock = accept(serv_sock, (struct sockaddr *)&clnt_addr, &clnt_addr_size);
-	if(clnt_sock  == -1)
-		write(clnt_sock, message, sizeof(message));
-	close(clnt_sock);
+	
+	for(i = 0; i < 5; i++)
+	{
+		clnt_sock = accept(serv_sock, (struct  sockaddr *)&clnt_sock, &clnt_adr_sz);
+		if(clnt_sock == -1)
+			error_handling("accept() error");
+		else
+			print("Connected client %d\n", i + 1);
+
+		while((str_len = read(clnt_sock, message, BUF_SIZE)) != 0)
+			write(clnt_sock, message, str_len);
+
+		close(clnt_sock);
+	}
 	close(serv_sock);
 	return 0;
 }
