@@ -1,0 +1,3 @@
+[submodule "gomelink3.0-device"]
+	path = gomelink3.0-device
+	url = http://code.gome.inc/gitlab/chenjing62/gomelink3.0-device.git
